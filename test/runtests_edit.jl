@@ -8,14 +8,14 @@ using Test
     A = rand(dimx,dimx)
     Σ = A*A'
     dx = MvNormal(zeros(dimx), Σ)
-    ∫a = Integrate.AdaptiveIntegrator(dx, options=(rtol=1e-6,initdiv=3))        
+    ∫a = Integrate_edit.AdaptiveIntegrator(dx, options=(rtol=1e-6,initdiv=3))        
     V = ∫a(x->x*x')
     @test isapprox(V, Σ, rtol=1e-5)
     
     val = ∫a(f)
     for N ∈ [1_000, 10_000, 100_000]
-        ∫mc = Integrate.MonteCarloIntegrator(dx, N)
-        ∫qmc = Integrate.QuasiMonteCarloIntegrator(dx,N)        
+        ∫mc = Integrate_edit.MonteCarloIntegrator(dx, N)
+        ∫qmc = Integrate_edit.QuasiMonteCarloIntegrator(dx,N)        
         @test isapprox(∫mc(x->x*x'), Σ, rtol=10/sqrt(N))
         @test isapprox(∫qmc(x->x*x'), Σ, rtol=10/sqrt(N))
 
@@ -33,7 +33,7 @@ end
     dx = MvNormal(dimx, 1.0)
     Σ = [1 0.5; 0.5 1]
     N = 1_000
-    ∫ = BLP.Integrate.QuasiMonteCarloIntegrator(dx, N)
+    ∫ = BLP.Integrate_edit.QuasiMonteCarloIntegrator(dx, N)
     X = [(-1.).^(1:J) 1:J]
     δ = collect((1:J)./J)
     s = BLP.share(δ,Σ,X,∫) 
@@ -45,7 +45,7 @@ end
     X = rand(J, dimx)
     dx = MvNormal(dimx, 1.0)
     Σ = I + ones(dimx,dimx)
-    ∫ = BLP.Integrate.QuasiMonteCarloIntegrator(dx, N)
+    ∫ = BLP.Integrate_edit.QuasiMonteCarloIntegrator(dx, N)
     δ = 1*rand(J)
     s = BLP.share(δ,Σ,X,∫) 
     d = BLP.delta(s, Σ, X, ∫)
@@ -64,7 +64,7 @@ end
     f(x) = exp(x[1]) / sum(exp.(x))
 
     # Testing the AdaptiveIntegrator
-    ∫a = Integrate.AdaptiveIntegrator(dx, options=(rtol=1e-6, initdiv=3))        
+    ∫a = Integrate_edit.AdaptiveIntegrator(dx, options=(rtol=1e-6, initdiv=3))        
     V = ∫a(x -> x * x')
     @test isapprox(V, Σ, rtol=1e-5)
 
@@ -72,13 +72,13 @@ end
     
     for N in [1_000, 10_000, 100_000]
  
-        ∫q = Integrate.QuadratureIntegrator(dx, ndraw=N)
+        ∫q = Integrate_edite.QuadratureIntegrator(dx, ndraw=N)
         @test isapprox(∫q(x -> x * x'), Σ, rtol=1e-5)
         @test isapprox(∫q(f), val, rtol=1e-5)
 
         # Testing the SparseGridQuadratureIntegrator with various order
         for order in [3, 5, 7]
-            ∫sgq = Integrate.SparseGridQuadratureIntegrator(dx, order=order)
+            ∫sgq = Integrate_edit.SparseGridQuadratureIntegrator(dx, order=order)
             @test isapprox(∫sgq(x -> x * x'), Σ, rtol=1e-5)
             @test isapprox(∫sgq(f), val, rtol=1e-5)
         end

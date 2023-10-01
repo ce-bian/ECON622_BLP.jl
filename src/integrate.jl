@@ -1,4 +1,4 @@
-module Integrate
+module Integrate_edit
 
 using Distributions
 import Sobol: skip, SobolSeq
