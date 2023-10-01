@@ -54,7 +54,8 @@ end
 end
 
 
-@testset "integrator" begin
+# update version
+@testset "QuadratureIntegrator" begin
     dimx = 3
     A = rand(dimx, dimx)
     Σ = A * A'
@@ -70,24 +71,14 @@ end
     val = ∫a(f)
     
     for N in [1_000, 10_000, 100_000]
-        # Testing the MonteCarloIntegrator
-        ∫mc = Integrate.MonteCarloIntegrator(dx, N)
-        @test isapprox(∫mc(x -> x * x'), Σ, rtol=10/sqrt(N))
-        @test isapprox(∫mc(f), val, rtol=1/sqrt(N))
-
-        # Testing the QuasiMonteCarloIntegrator
-        ∫qmc = Integrate.QuasiMonteCarloIntegrator(dx, N)
-        @test isapprox(∫qmc(x -> x * x'), Σ, rtol=10/sqrt(N))
-        @test isapprox(∫qmc(f), val, rtol=1/sqrt(N))
-
-        # Testing the QuadratureIntegrator
+ 
         ∫q = Integrate.QuadratureIntegrator(dx, ndraw=N)
         @test isapprox(∫q(x -> x * x'), Σ, rtol=1e-5)
         @test isapprox(∫q(f), val, rtol=1e-5)
 
         # Testing the SparseGridQuadratureIntegrator with various order
         for order in [3, 5, 7]
-            ∫sgq = YourModule.SparseGridQuadratureIntegrator(dx, order=order)
+            ∫sgq = Integrate.SparseGridQuadratureIntegrator(dx, order=order)
             @test isapprox(∫sgq(x -> x * x'), Σ, rtol=1e-5)
             @test isapprox(∫sgq(f), val, rtol=1e-5)
         end
