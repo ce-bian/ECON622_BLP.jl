@@ -84,3 +84,36 @@ end
         end
     end
 end
+
+
+@testset "delta function" begin
+    s = [0.2, 0.3, 0.5]  
+    Σ = [1 0.5 0; 0.5 1 0; 0 0 1]  
+    x = [1, 2, 3] 
+    N = 1_000
+    ∫ = Integrate_edit.QuasiMonteCarloIntegrator(MvNormal(3, 1.0), N)  
+
+    @testset "test1" begin
+        s = [0.2, 0.3, 0.5]
+        Σ = [1 0.5 0; 0.5 1 0; 0 0 1]
+        x = [1, 2, 3]
+        N = 1_000
+        ∫ = Integrate_edit.QuasiMonteCarloIntegrator(MvNormal(3, 1.0), N)
+        
+        δ = Integrate_edit.delta(s, Σ, x, ∫)
+        
+    end
+
+   # below is from ChatGPT...
+    # A scenario where delta should fail and emit a warning
+    @testset "test2" begin
+        s_faulty = [0.2, 0.3, 0.6]  # does not sum to 1
+        
+        # Expect a warning to be emitted, which means that delta should NOT successfully compute a solution
+        @test_logs (:warn, r"Possible problem in delta\(s, \.\.\.\)\n.*") YourModule.delta(s_faulty, Σ, x, ∫)
+        
+        # Alternatively, if delta throws an error on failure, you might want to check that this happens:
+        @test_throws YourExpectedExceptionType YourModule.delta(s_faulty, Σ, x, ∫)
+        # Replace `YourExpectedExceptionType` with the type of error you expect, e.g., DomainError
+    end
+end
